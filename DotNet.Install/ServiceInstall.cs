@@ -14,7 +14,7 @@ namespace DotNet.Install
     public static class ServiceInstall
     {
         /// <summary>
-        /// Windows 环境下运行
+        /// Windows 环境下运行1
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="serviceName"></param>
