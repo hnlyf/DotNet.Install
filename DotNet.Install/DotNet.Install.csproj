@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Authors>中国.NET研究协会</Authors>
+    <Company>中国.NET研究协会</Company>
+    <Product>程序安装</Product>
+    <Description>简单方便的将.Net Core程序以服务启动，支持Window和Unix环境。QQ群：45132984</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.4</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>DotNet.Framework.pfx</AssemblyOriginatorKeyFile>
+    <Copyright>http://www.dotnet.org.cn</Copyright>
+    <PackageId>DotNetCN.Install</PackageId>
+    <PackageTags>DotNet.Install,Service,DotNet Service,Core Service,Core 服务,服务启动</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>F:\Demo\DotNetCore.Framework\DotNet.Install\DotNet.Install.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>F:\Demo\DotNetCore.Framework\DotNet.Install\DotNet.Install.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Win32.Registry">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.win32.registry\4.5.0\ref\netstandard2.0\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

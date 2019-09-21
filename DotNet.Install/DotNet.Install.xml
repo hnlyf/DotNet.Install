@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DotNet.Install</name>
+    </assembly>
+    <members>
+        <member name="T:DotNet.Install.ServiceInstall">
+            <summary>
+            服务安装
+            </summary>
+        </member>
+        <member name="M:DotNet.Install.ServiceInstall.RunWin(System.String,System.String,System.String,System.String,System.String[],System.Action{System.String[]})">
+            <summary>
+            Windows 环境下运行
+            </summary>
+            <param name="filePath"></param>
+            <param name="serviceName"></param>
+            <param name="displayName"></param>
+            <param name="serviceDescription"></param>
+            <param name="args"></param>
+            <param name="startRun"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNet.Install.ServiceInstall.RunUnix(System.String,System.String,System.String,System.String[],System.Action{System.String[]})">
+            <summary>
+            Unix环境下运行
+            </summary>
+            <param name="filePath"></param>
+            <param name="serviceName"></param>
+            <param name="serviceDescription"></param>
+            <param name="args"></param>
+            <param name="startRun"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DotNet.Install.ServiceInstall.Run(System.String,System.String[],System.Action{System.String[]})">
+            <summary>
+            运行程序，如果有命令-i或者-u则执行安装或卸载，否则执行<paramref name="startRun"/>
+            <para>请在Main函数中调用，服务显示名称请在Main函数增加[DisplayName()]特性，服务说明[Description]特性。</para>
+            <para>Windiows下需要依赖System.ServiceProcess.ServiceController</para>
+            <para>-i 表示安装服务</para>
+            <para>-u 表示卸载服务</para>
+            </summary>
+            <param name="serviceName">服务名称</param>
+            <param name="args">启动程序的参数</param>
+            <param name="startRun">实际程序运行的函数</param>
+        </member>
+        <member name="M:DotNet.Install.ServiceInstall.IsAdmin">
+            <summary>
+            判断是否是处于Administrator下允许
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DotNet.Install.WinService">
+            <summary>
+            Windows 服务
+            </summary>
+        </member>
+        <member name="M:DotNet.Install.WinService.OnStart(System.String[])">
+            <summary>
+            启动服务
+            </summary>
+            <param name="args"></param>
+        </member>
+    </members>
+</doc>
