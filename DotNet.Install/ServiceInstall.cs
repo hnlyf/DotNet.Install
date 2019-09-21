@@ -112,7 +112,6 @@ namespace DotNet.Install
         /// <returns></returns>
         static bool RunUnix(string filePath, string serviceName, string serviceDescription, string[] args, Action<string[]> startRun)
         {
-            filePath = System.IO.Path.ChangeExtension(filePath, ".exe");//修改后缀名为exe
             var workingDirectory = System.IO.Path.GetDirectoryName(filePath);
             if (args.Length == 1)
             {
