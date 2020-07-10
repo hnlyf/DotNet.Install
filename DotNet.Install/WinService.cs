@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DotNet.Install
 {
@@ -22,9 +23,15 @@ namespace DotNet.Install
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
-            StartRun(args);
+            _ = OnRun(args);
         }
-        public static void Config(Action<string[]> startRun,string serviceName)
+        protected async Task OnRun(string[] args)
+        {
+            await Task.Run(() => {
+                StartRun(args);
+            });
+        }
+        public static void Config(Action<string[]> startRun, string serviceName)
         {
             WinServiceName = serviceName;
             StartRun = startRun;

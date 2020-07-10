@@ -1,18 +1,4 @@
-﻿/**************************************************************
-* Copyright (C) 2019 www.hnlyf.com 版权所有(盗版必究)
-*
-* 作者: 李益芬(QQ 12482335)
-* 创建时间: 2019/09/22 22:40:15
-* 文件名: 
-* 描述: 
-* 
-* 修改历史
-* 修改人：
-* 时间：
-* 修改说明：
-*
-**************************************************************/
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -37,11 +23,10 @@ namespace DotNet.Install
         /// <param name="args"></param>
         /// <param name="startRun"></param>
         /// <returns></returns>
-        static bool RunWin(string filePath, string serviceName,string displayName, string serviceDescription, string[] args, Action<string[]> startRun)
+        static bool RunWin(string filePath, string serviceName, string displayName, string serviceDescription, string[] args, Action<string[]> startRun)
         {
             if (args.Length == 1)
             {
-                var workingDirectory = System.IO.Path.GetDirectoryName(filePath);
                 if (System.IO.File.Exists(System.IO.Path.ChangeExtension(filePath, ".exe")))
                 {
                     filePath = System.IO.Path.ChangeExtension(filePath, ".exe");//修改后缀名为exe
@@ -80,6 +65,10 @@ namespace DotNet.Install
                     {
                         service.SetValue("Description", serviceDescription);
                     }
+                    Console.WriteLine($"启动服务命令");
+                    Console.WriteLine($"net start {serviceName}  //启动服务 或");
+                    Console.WriteLine($"{filePath} -i //启动服务");
+
                     return true;
                 }
                 else if (args[0].Equals("-u", StringComparison.OrdinalIgnoreCase))
@@ -91,6 +80,28 @@ namespace DotNet.Install
                     Console.WriteLine(StartProcess("sc.exe", $"delete {serviceName}"));
                     Console.WriteLine($"Windows 下卸载服务完成，如果失败请手动执行以下命令完成卸载:");
                     Console.WriteLine($"sc delete {serviceName}  //卸载服务");
+                    return true;
+                }
+                else if (args[0].Equals("-s", StringComparison.OrdinalIgnoreCase) || args[0].Equals("-start", StringComparison.OrdinalIgnoreCase))//启动服务
+                {
+                    if (!AdminRestartApp(filePath, args))
+                    {
+                        return true;
+                    }
+                    Console.WriteLine(StartProcess("net.exe", $"start {serviceName}"));
+                    Console.WriteLine($"启动服务{serviceName}，如果失败请运行命令完成");
+                    Console.WriteLine($"net start {serviceName}  //启动服务");
+                    return true;
+                }
+                else if (args[0].Equals("-t", StringComparison.OrdinalIgnoreCase) || args[0].Equals("-stop", StringComparison.OrdinalIgnoreCase))//停止服务
+                {
+                    if (!AdminRestartApp(filePath, args))
+                    {
+                        return true;
+                    }
+                    Console.WriteLine(StartProcess("net.exe", $"stop {serviceName}"));
+                    Console.WriteLine($"停止服务{serviceName}，如果失败请运行命令完成");
+                    Console.WriteLine($"net stop {serviceName}  //停止服务");
                     return true;
                 }
             }
@@ -112,6 +123,7 @@ namespace DotNet.Install
         /// <returns></returns>
         static bool RunUnix(string filePath, string serviceName, string serviceDescription, string[] args, Action<string[]> startRun)
         {
+            //filePath = System.IO.Path.ChangeExtension(filePath, ".exe");//修改后缀名为exe
             var workingDirectory = System.IO.Path.GetDirectoryName(filePath);
             if (args.Length == 1)
             {
@@ -136,6 +148,12 @@ namespace DotNet.Install
                     Console.WriteLine($"systemctl enable {serviceName}.service  //使自启动生效");
                     Console.WriteLine($"systemctl start {serviceName}.service  //立即启动项目服务");
                     Console.WriteLine($"systemctl status {serviceName}.service -l //查看服务状态");
+                    var txtPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filePath), "服务管理.txt");
+                    System.IO.File.AppendAllText(txtPath, $"systemctl enable {serviceName}.service //使服务开机启动生效\r\n");
+                    System.IO.File.AppendAllText(txtPath, $"systemctl disable {serviceName}.service //使服务开机启动失效\r\n");
+                    System.IO.File.AppendAllText(txtPath, $"systemctl start {serviceName}.service //启动服务\r\n");
+                    System.IO.File.AppendAllText(txtPath, $"systemctl stop {serviceName}.service //停止服务\r\n");
+                    System.IO.File.AppendAllText(txtPath, $"systemctl status {serviceName}.service //查看服务状态\r\n");
                     return true;
                 }
                 else if (args[0].Equals("-u", StringComparison.OrdinalIgnoreCase))
@@ -149,6 +167,28 @@ namespace DotNet.Install
                     Console.WriteLine($"Unix 下卸载服务完成，如果失败请手动执行以下命令完成卸载");
                     Console.WriteLine($"systemctl disable {serviceName}.service  //使自启动失效");
                     Console.WriteLine($"rm -y {servicepath}  //删除服务文件");
+                    return true;
+                }
+                else if (args[0].Equals("-s", StringComparison.OrdinalIgnoreCase) || args[0].Equals("-start", StringComparison.OrdinalIgnoreCase))//启动服务
+                {
+                    if (!AdminRestartApp(filePath, args))
+                    {
+                        return true;
+                    }
+                    Console.WriteLine(StartProcess("/usr/bin/systemctl", $"start {serviceName}.service"));
+                    Console.WriteLine($"启动服务{serviceName}，如果失败请运行命令完成");
+                    Console.WriteLine($"systemctl start {serviceName}.service  //启动服务");
+                    return true;
+                }
+                else if (args[0].Equals("-t", StringComparison.OrdinalIgnoreCase) || args[0].Equals("-stop", StringComparison.OrdinalIgnoreCase))//停止服务
+                {
+                    if (!AdminRestartApp(filePath, args))
+                    {
+                        return true;
+                    }
+                    Console.WriteLine(StartProcess("/usr/bin/systemctl", $"stop {serviceName}.service"));
+                    Console.WriteLine($"停止服务{serviceName}，如果失败请运行命令完成");
+                    Console.WriteLine($"systemctl stop {serviceName}.service  //停止服务");
                     return true;
                 }
             }
@@ -166,40 +206,53 @@ namespace DotNet.Install
         /// <param name="serviceName">服务名称</param>
         /// <param name="args">启动程序的参数</param>
         /// <param name="startRun">实际程序运行的函数</param>
-        public static void Run(string serviceName, string[] args, Action<string[]> startRun)
+        /// <param name="displayName">服务显示名称</param>
+        /// <param name="serviceDescription">服务说明</param>
+        public static void Run(string serviceName, string[] args, Action<string[]> startRun, string displayName = null, string serviceDescription = null)
         {
-            bool finish = false;
-            string serviceDescription = serviceName;
-            string displayName = serviceName;
+            Environment.CurrentDirectory = System.IO.Path.GetDirectoryName(typeof(ServiceInstall).Assembly.Location);//解决启动目录问题
             string filePath = string.Empty;
             if (args.Length == 1)
             {
+                if (args[0] == "-d")
+                {
+                    startRun(args);
+                    return;
+                }
                 StackFrame frame = new StackFrame(1);
                 if (string.IsNullOrWhiteSpace(serviceName))
                 {
-                    serviceName=frame.GetMethod().DeclaringType.Assembly.GetName().Name;
+                    serviceName = frame.GetMethod().DeclaringType.Assembly.GetName().Name;
                 }
-                var displayNames = frame.GetMethod().GetCustomAttributes(typeof(DisplayNameAttribute), true);
-                if (displayNames.Length > 0)
+                if (string.IsNullOrEmpty(displayName))
                 {
-                    displayName = (displayNames[0] as DisplayNameAttribute).DisplayName;
+                    var displayNames = frame.GetMethod().GetCustomAttributes(typeof(DisplayNameAttribute), true);
+                    if (displayNames.Length > 0)
+                    {
+                        displayName = (displayNames[0] as DisplayNameAttribute).DisplayName;
+                    }
                 }
-                var descriptions = frame.GetMethod().GetCustomAttributes(typeof(DescriptionAttribute), true);
-                if (descriptions.Length > 0)
+                if (string.IsNullOrEmpty(serviceDescription))
                 {
-                    serviceDescription = (descriptions[0] as DescriptionAttribute).Description;
+                    var descriptions = frame.GetMethod().GetCustomAttributes(typeof(DescriptionAttribute), true);
+                    if (descriptions.Length > 0)
+                    {
+                        serviceDescription = (descriptions[0] as DescriptionAttribute).Description;
+                    }
                 }
                 filePath = frame.GetMethod().DeclaringType.Assembly.Location;
             }
+
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                finish = RunWin(filePath, serviceName, displayName, serviceDescription, args, startRun);
+               RunWin(filePath, serviceName, displayName ?? serviceName, serviceDescription ?? serviceName, args, startRun);
             }
             else
             {
-                finish = RunUnix(filePath, serviceName, serviceDescription, args, startRun);
+               RunUnix(filePath, serviceName ?? serviceName, serviceDescription ?? serviceName, args, startRun);
             }
         }
+
         static string StartProcess(string fileName, string arguments)
         {
             string output = string.Empty;
@@ -223,7 +276,7 @@ namespace DotNet.Install
             }
             return output;
         }
-        static bool AdminRestartApp(string filePath,string[] args)
+        static bool AdminRestartApp(string filePath, string[] args)
         {
             if (!IsAdmin())
             {
